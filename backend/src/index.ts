@@ -3,6 +3,7 @@ import redis from "./redis";
 import { rateLimiter } from "./rateLimiter";
 import { incrementClickCount, getClickCount } from "./clickCounter";
 import { enqueueClick } from "./clickQueue";
+import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -26,6 +27,14 @@ app.post("/click", async (req, res) => {
   await incrementClickCount();
 
   res.status(200).json({ message: "Click registered!" });
+});
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, "../public")));
+
+// Define a route to serve the index.html at the root URL
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 app.listen(3012, () => {
